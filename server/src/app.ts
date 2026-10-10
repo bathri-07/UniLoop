@@ -10,6 +10,7 @@ import collegeRoutes from './routes/collegeRoutes';
 import productRoutes from './routes/productRoutes';
 import userRoutes from './routes/userRoutes';
 import uploadRoutes from './routes/uploadRoutes';
+import requestRoutes from './routes/requestRoutes';
 
 export const createApp = (): Application => {
   const app = express();
@@ -69,6 +70,7 @@ export const createApp = (): Application => {
   app.use('/api/v1/products', productRoutes);
   app.use('/api/v1/users', userRoutes);
   app.use('/api/v1/upload', uploadRoutes);
+  app.use('/api/v1/requests', requestRoutes);
 
   // 6. Handle 404 for undefined routes
   app.use('*', (req: Request, res: Response) => {

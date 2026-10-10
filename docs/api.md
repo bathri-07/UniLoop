@@ -236,12 +236,27 @@
 
 ### 7.1 Create Buy Request (Verification & Campus Guard)
 - **Method & Path:** `POST /api/v1/requests`
-- **Access:** Protected (Buyer != Seller)
+- **Access:** Protected (`Bearer <JWT>`) — Verified Students Only (`isVerified: true`)
+- **Rate Limit:** 30 requests per 15 minutes (`requestLimiter`)
 - **Business Rules:**
-  - **Requires `isVerified: true`:** Unverified students receive `403 Forbidden: Please verify your campus email before submitting buy requests.`
-  - **Same-College Only:** Buyer's `college` must match Product's `college`. If mismatched, returns `403 Forbidden: Cross-campus requests are not permitted.`
-  - **Partial Unique Index:** Returns `409 Conflict` if buyer already has an active (`pending` or `accepted`) request on this product.
-- **Request Body:**
+  - **Authentication & Verification Gate:** Requires valid JWT and `isVerified: true`. Unverified students receive `403 Forbidden`. Suspended students receive `403 Forbidden`.
+  - **Same-College Guard:** Buyer's `college` must match Product's `college`. Mismatched requests receive `403 Forbidden: Cross-campus requests are not permitted.`
+  - **Own-Listing Guard:** Buyers cannot request their own listings (`400 Bad Request: You cannot submit a purchase request for your own listing.`).
+  - **Product Eligibility Gate:** Product must exist (`404 Not Found`) and be eligible (`available`, or expired hold). Listings that are `paused`, `sold`, or actively `reserved` receive `400 Bad Request`.
+  - **Duplicate Active Request Guard:** Returns `409 Conflict` if the buyer already has an active request (`pending` or `accepted`) on this product. Backed by MongoDB partial unique index on `{ product: 1, buyer: 1 }`.
+  - **Automatic Derivations & Defaults:**
+    - `buyer` is strictly derived from `req.user._id` (never from request body).
+    - `seller` is strictly derived from `product.seller`.
+    - `offeredPrice`: defaults to `product.price` if omitted.
+    - `buyerContact`: defaults to `req.user.phone` if omitted.
+    - `message`: defaults to standard campus pickup greeting if omitted.
+- **Request Body (Minimal):**
+```json
+{
+  "productId": "6704b3caf89e1a0012345680"
+}
+```
+- **Request Body (Full / Custom Offer):**
 ```json
 {
   "productId": "6704b3caf89e1a0012345680",
@@ -250,7 +265,31 @@
   "buyerContact": "+919819876543 (WhatsApp)"
 }
 ```
-- **Response `201 Created`:** Returns created request (Notice: PIN is NOT generated yet; PIN is generated at accept time).
+- **Response `201 Created`:**
+```json
+{
+  "success": true,
+  "message": "Purchase request submitted successfully",
+  "data": {
+    "request": {
+      "_id": "6704b5f9f89e1a0012345701",
+      "product": "6704b3caf89e1a0012345680",
+      "buyer": "6704b2baf89e1a0012345672",
+      "seller": "6704b2baf89e1a0012345671",
+      "offeredPrice": 420,
+      "message": "Can meet outside library at 4 PM.",
+      "buyerContact": "+919819876543 (WhatsApp)",
+      "status": "pending",
+      "sellerHandoverConfirmed": false,
+      "buyerHandoverConfirmed": false,
+      "handoverAttempts": 0,
+      "createdAt": "2026-10-10T06:00:00.000Z",
+      "updatedAt": "2026-10-10T06:00:00.000Z"
+    }
+  }
+}
+```
+*(Notice: `handoverPin` is not generated at request creation time; it is generated strictly at seller accept time).*
 
 ### 7.2 Get Incoming Requests (For Seller)
 - **Method & Path:** `GET /api/v1/requests/incoming`

@@ -12,7 +12,8 @@
     "seed": "tsx src/utils/seed.ts",
     "test:auth": "tsx tests/auth.test.ts",
     "test:product": "tsx tests/product.test.ts",
-    "test": "tsx tests/auth.test.ts && tsx tests/product.test.ts"
+    "test:request": "tsx tests/request.test.ts",
+    "test": "tsx tests/auth.test.ts && tsx tests/product.test.ts && tsx tests/request.test.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

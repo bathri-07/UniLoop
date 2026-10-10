@@ -504,7 +504,7 @@ export const BuyRequest = model<IBuyRequest>('BuyRequest', buyRequestSchema);
 ### 3.1 Transactional Accept & Atomic Reservation
 When a seller accepts a request:
 1. Accept requires `request.status === 'pending'`.
-2. Uses a MongoDB session transaction (`withTransaction` or `session.startTransaction()`).
+2. Uses a MongoDB session transaction (`withTransaction` or `session.startTransaction()`) in replica set environments (e.g., MongoDB Atlas). On standalone local MongoDB instances where multi-document transactions are unsupported, single-document atomic operations and database constraint indexes guarantee integrity.
 3. The atomic `Product.findOneAndUpdate` treats **expired reservations** (`status: 'reserved'` with `reservedUntil < now`) as available:
 4. Generates a secure 4-digit PIN at accept time using `crypto.randomInt(1000, 10000).toString()`.
 
