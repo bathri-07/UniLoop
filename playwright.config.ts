@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+declare const process: { env: { CI?: string } };
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -28,18 +30,19 @@ export default defineConfig({
     },
   ],
   /* Dedicated E2E backend and frontend processes with explicit readiness probes */
-  webServer: [
-    {
-      command: 'npm run dev:e2e --prefix server',
-      url: 'http://localhost:5000/api/v1/health',
-      reuseExistingServer: false,
-      timeout: 30000,
-    },
-    {
-      command: 'npm run dev --prefix client',
-      url: 'http://localhost:5173',
-      reuseExistingServer: false,
-      timeout: 30000,
-    },
-  ],
+  
+webServer: [
+  {
+    command: 'npm run dev:e2e --prefix server',
+    url: 'http://localhost:5000/api/v1/health',
+    reuseExistingServer: false,
+    timeout: 45000,
+  },
+  {
+    command: 'npm run dev --prefix client',
+    url: 'http://localhost:5173',
+    reuseExistingServer: false,
+    timeout: 45000,
+  },
+],
 });

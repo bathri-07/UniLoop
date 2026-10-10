@@ -16,12 +16,12 @@ const rateLimitResponse = (message: string) => ({
  * - Request headers are NEVER inspected for bypass authorization, preventing
  *   any header spoofing by unauthorized callers.
  */
-export const isRateLimitBypassed = (): boolean => {
-  if (process.env.NODE_ENV === 'production') {
-    return false;
-  }
-  return process.env.E2E_TEST === 'true' || process.env.NODE_ENV === 'test';
-};
+export const isRateLimitBypassed = (): boolean =>
+  process.env.NODE_ENV !== 'production' &&
+  (
+    process.env.E2E_TEST === 'true' ||
+    process.env.NODE_ENV === 'test'
+  );
 
 // General API Rate Limiter
 export const apiLimiter = rateLimit({
