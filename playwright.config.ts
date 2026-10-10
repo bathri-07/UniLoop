@@ -27,11 +27,19 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  /* Reuse existing frontend & backend dev servers without starting duplicates */
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:5173',
-    reuseExistingServer: true,
-    timeout: 30000,
-  },
+  /* Dedicated E2E backend and frontend processes with explicit readiness probes */
+  webServer: [
+    {
+      command: 'npm run dev:e2e --prefix server',
+      url: 'http://localhost:5000/api/v1/health',
+      reuseExistingServer: false,
+      timeout: 30000,
+    },
+    {
+      command: 'npm run dev --prefix client',
+      url: 'http://localhost:5173',
+      reuseExistingServer: false,
+      timeout: 30000,
+    },
+  ],
 });

@@ -304,22 +304,44 @@
     2. The 4-digit `handoverPin` (generated at accept time via `crypto.randomInt`).
   - If `status === 'pending'`, seller contact and PIN are undefined.
 
-### 7.4 Transactional Accept Request (48-Hour Hold)
-- **Method & Path:** `PATCH /api/v1/requests/:id/status`
-- **Access:** Protected (Seller Only for `accepted`/`rejected`, Buyer for `cancelled`)
-- **Transactional Operation:**
-  - Requires `request.status === 'pending'`.
-  - Runs in a MongoDB session transaction.
-  - Queries `Product.findOneAndUpdate` matching `{ status: 'available' }` OR `{ status: 'reserved', reservedUntil: { $lt: now } }` (treats expired holds as available).
-  - Generates 4-digit `handoverPin` via `crypto.randomInt(1000, 10000).toString()`.
-  - Sets product `status: 'reserved'` and `reservedUntil: Date.now() + 48h`.
-- **Request Body:**
+### 7.4 Request Status Transitions & Atomic 48-Hour Reservation Hold
+- **Method & Path:** `PATCH /api/v1/requests/:id/status` (Also accessible via `POST /api/v1/requests/:id/accept`, `POST /api/v1/requests/:id/reject`, `POST /api/v1/requests/:id/cancel`)
+- **Access:** Protected (`Bearer <JWT>`) — Verified Students Only
+  - **Seller Only:** for `status: "accepted"` and `status: "rejected"`
+  - **Buyer Only:** for `status: "cancelled"`
+- **Business Rules:**
+  - **Ownership Verification:** Only the seller can accept or reject; only the buyer can cancel. Non-owners receive `403 Forbidden`.
+  - **Invalid Transition Gate:** Transitions from finalized states (`rejected`, `cancelled`, `completed`, `expired`) receive `400 Bad Request`.
+  - **Ineligibility Guards:** Sold or paused listings cannot be accepted (`400 Bad Request`).
+  - **Atomic 48-Hour Reservation Hold (Accept):**
+    - Conditionally and atomically claims `Product` via `Product.findOneAndUpdate` matching `{ status: 'available' }` OR `{ status: 'reserved', reservedUntil: { $lt: now } }`.
+    - Mutually associates `product.reservedRequest = request._id` and `product.reservedFor = request.buyer`.
+    - Exactly sets `product.reservedUntil = Date.now() + 48h` (172,800,000 ms).
+    - If another active request already holds the reservation, returns `409 Conflict: Item is no longer available or already reserved`.
+  - **Lazy & Synchronous Expiry Handling:**
+    - Expired reservations (`reservedUntil < now`) are treated as available on subsequent accept attempts without relying on background daemons.
+    - When an expired reservation is claimed by a new request, the prior holding request is automatically transitioned to `status: 'expired'`.
+  - **Rollback & Mid-Write Reconciliation:**
+    - If updating the `BuyRequest` document fails after `Product` was claimed, the reservation on `Product` is atomically rolled back to `status: 'available'`.
+- **Request Body (Accept):**
 ```json
 {
   "status": "accepted"
 }
 ```
-- **Response `200 OK`:**
+- **Request Body (Reject):**
+```json
+{
+  "status": "rejected"
+}
+```
+- **Request Body (Cancel):**
+```json
+{
+  "status": "cancelled"
+}
+```
+- **Response `200 OK` (Accepted):**
 ```json
 {
   "success": true,
@@ -327,11 +349,19 @@
   "data": {
     "requestId": "6704b5f9f89e1a0012345701",
     "status": "accepted",
-    "reservedUntil": "2026-10-11T22:30:00.000Z"
+    "reservedUntil": "2026-10-12T06:00:00.000Z",
+    "request": {
+      "_id": "6704b5f9f89e1a0012345701",
+      "status": "accepted",
+      "product": "6704b3caf89e1a0012345680",
+      "buyer": "6704b2baf89e1a0012345672",
+      "seller": "6704b2baf89e1a0012345671",
+      "offeredPrice": 420
+    }
   }
 }
 ```
-- **Response `409 Conflict` (Race Condition):**
+- **Response `409 Conflict` (Concurrent Race / Already Held):**
 ```json
 {
   "success": false,

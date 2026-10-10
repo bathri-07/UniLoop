@@ -10,8 +10,8 @@ test.describe('Authentication & Session Navigation', () => {
     await page.fill('#login-password', 'WrongPassword999!');
     await page.getByRole('button', { name: 'Sign In' }).click();
 
-    // Verify error banner is rendered
-    await expect(page.getByText(/Invalid.*password/i)).toBeVisible();
+    // Verify error banner displays exact intended user-facing error message
+    await expect(page.getByText('Invalid campus email or password')).toBeVisible();
     await expect(page).toHaveURL(/\/login/);
   });
 

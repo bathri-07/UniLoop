@@ -501,11 +501,33 @@ export const BuyRequest = model<IBuyRequest>('BuyRequest', buyRequestSchema);
 
 ## 3. Atomic Transactional Reservation & Expired Hold Handling
 
-### 3.1 Transactional Accept & Atomic Reservation
+### 3.1 Acceptance Architecture & Two-Write Reservation Flow
+
 When a seller accepts a request:
-1. Accept requires `request.status === 'pending'`.
-2. Uses a MongoDB session transaction (`withTransaction` or `session.startTransaction()`) in replica set environments (e.g., MongoDB Atlas). On standalone local MongoDB instances where multi-document transactions are unsupported, single-document atomic operations and database constraint indexes guarantee integrity.
-3. The atomic `Product.findOneAndUpdate` treats **expired reservations** (`status: 'reserved'` with `reservedUntil < now`) as available:
+1. **Pre-flight Guards:** Requires `request.status === 'pending'`, seller ownership, and listing eligibility.
+2. **Execution Strategy:**
+   - **Replica Set Environments (e.g. MongoDB Atlas):** Employs multi-document MongoDB transactions (`session.withTransaction`) for true ACID cross-document atomicity across `Product` and `BuyRequest`.
+   - **Standalone Development / Local MongoDB:** Multi-document transactions are unsupported on non-replica set standalone MongoDB instances. The system uses an atomic two-write sequence with in-process compensation and lazy reconciliation.
+
+#### Standalone Two-Write Acceptance Mechanics:
+1. **Write 1 (Product Concurrency Anchor):**
+   `Product.findOneAndUpdate` conditionally claims the product matching `{ _id, seller, $or: [{ status: 'available' }, { status: 'reserved', reservedUntil: { $lt: now } }, { status: 'reserved', reservedRequest: buyRequest._id }] }`.
+   Sets `status: 'reserved'`, `reservedUntil: now + 48h`, `reservedFor: buyer._id`, and `reservedRequest: buyRequest._id`.
+   If another request holds the product, returns `409 Conflict`.
+2. **Write 2 (Request Status Transition):**
+   `BuyRequest.findOneAndUpdate` conditionally updates `{ _id: buyRequest._id, status: 'pending' }` to `status: 'accepted'`.
+3. **In-Process Rollback:**
+   If Write 2 fails or throws an exception, the in-process `catch` block rolls back `Product.findOneAndUpdate({ _id: product._id, reservedRequest: buyRequest._id })`, restoring `status: 'available'` and clearing reservation fields.
+
+#### Interrupted-Reservation Limitation & Lazy Reconciliation Recovery:
+- **Limitation:** In the two-write flow on standalone MongoDB, a catastrophic server crash (e.g. `SIGKILL`, power failure, hardware fault) occurring *between* Write 1 and Write 2 will bypass the in-process rollback. In this scenario, `Product` remains marked `reserved`, while `BuyRequest` remains `pending`.
+- **Lazy Reconciliation Recovery (`reconcileProductReservation`):**
+  UniLoop implements an automated, conditional recovery mechanism:
+  - Whenever `acceptRequest`, `createBuyRequest`, or feed lookups (`reconcileRequestExpiry`) access a reserved listing, `reconcileProductReservation(productId)` evaluates the hold.
+  - If `product.reservedRequest` is absent, or if the referenced `BuyRequest` does not exist or has `status !== 'accepted'`, the reservation is recognized as orphaned.
+  - The listing is atomically recovered back to `status: 'available'` and reservation fields are cleared.
+- **Production Recommendation:** For zero-window cross-document atomicity, configure a MongoDB Replica Set (`rs0`) in production to use native multi-document transactions.
+
 4. Generates a secure 4-digit PIN at accept time using `crypto.randomInt(1000, 10000).toString()`.
 
 ```typescript

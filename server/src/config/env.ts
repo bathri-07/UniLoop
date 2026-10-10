@@ -11,6 +11,7 @@ export interface AppEnv {
   MONGO_URI: string;
   JWT_SECRET: string;
   DEMO_MODE: boolean;
+  E2E_TEST: boolean;
   CLOUDINARY_CLOUD_NAME?: string;
   CLOUDINARY_API_KEY?: string;
   CLOUDINARY_API_SECRET?: string;
@@ -23,6 +24,14 @@ export const validateEnv = (): AppEnv => {
   const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/uniloop';
   const JWT_SECRET = process.env.JWT_SECRET || '';
   const DEMO_MODE = process.env.DEMO_MODE === 'true';
+  const E2E_TEST = process.env.E2E_TEST === 'true';
+
+  // Production Guardrail: Fail immediately if E2E_TEST is enabled in production mode
+  if (NODE_ENV === 'production' && E2E_TEST) {
+    const errorMsg = 'FATAL CONFIG ERROR: E2E_TEST cannot be enabled in production mode.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
 
   // Defensive Guardrail: AGENTS.md § 2.4 - Fail immediately if JWT_SECRET is missing or < 32 characters
   if (!JWT_SECRET || JWT_SECRET.length < 32) {
@@ -38,6 +47,7 @@ export const validateEnv = (): AppEnv => {
     MONGO_URI,
     JWT_SECRET,
     DEMO_MODE,
+    E2E_TEST,
     CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
     CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
     CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET

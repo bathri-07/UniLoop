@@ -6,12 +6,30 @@ const rateLimitResponse = (message: string) => ({
   message
 });
 
+/**
+ * Production Guardrail & Dedicated E2E Test Process Guardrail:
+ * - Rate limit bypass is strictly prohibited in production, regardless of any
+ *   environment flags or request headers.
+ * - Rate-limit bypass is disabled by default in all environments.
+ * - Only activates when the backend process is explicitly launched with
+ *   process.env.E2E_TEST = 'true' (or NODE_ENV = 'test') in non-production.
+ * - Request headers are NEVER inspected for bypass authorization, preventing
+ *   any header spoofing by unauthorized callers.
+ */
+export const isRateLimitBypassed = (): boolean => {
+  if (process.env.NODE_ENV === 'production') {
+    return false;
+  }
+  return process.env.E2E_TEST === 'true' || process.env.NODE_ENV === 'test';
+};
+
 // General API Rate Limiter
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 300,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => isRateLimitBypassed(),
   message: rateLimitResponse('Too many requests from this IP, please try again after 15 minutes.')
 });
 
@@ -21,6 +39,7 @@ export const loginLimiter = rateLimit({
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => isRateLimitBypassed(),
   message: rateLimitResponse('Too many login attempts. Please try again after 15 minutes.')
 });
 
@@ -30,6 +49,7 @@ export const requestLimiter = rateLimit({
   max: 30,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => isRateLimitBypassed(),
   message: rateLimitResponse('Too many purchase requests submitted. Please slow down.')
 });
 
@@ -39,6 +59,7 @@ export const uploadLimiter = rateLimit({
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => isRateLimitBypassed(),
   message: rateLimitResponse('Hourly image upload limit reached. Please wait before uploading more.')
 });
 
@@ -48,5 +69,6 @@ export const handoverPinLimiter = rateLimit({
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => isRateLimitBypassed(),
   message: rateLimitResponse('Too many failed PIN attempts. Handover is temporarily locked.')
 });

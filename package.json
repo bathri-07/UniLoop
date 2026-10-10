@@ -5,7 +5,9 @@
   "description": "UniLoop — Smart, Secure, Second-Hand Campus Exchange",
   "scripts": {
     "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,green\" \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "dev:e2e": "concurrently -n \"SERVER,CLIENT\" -c \"blue,green\" \"npm run dev:e2e --prefix server\" \"npm run dev --prefix client\"",
     "dev:server": "npm run dev --prefix server",
+    "dev:e2e:server": "npm run dev:e2e --prefix server",
     "dev:client": "npm run dev --prefix client",
     "build:server": "npm run build --prefix server",
     "build:client": "npm run build --prefix client",

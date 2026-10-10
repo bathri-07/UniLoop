@@ -33,6 +33,7 @@ export interface IProduct extends Document {
   status: ProductStatus;
   reservedUntil?: Date;
   reservedFor?: Types.ObjectId;
+  reservedRequest?: Types.ObjectId;
   campusPickupLocation: string;
   createdAt: Date;
   updatedAt: Date;
@@ -146,6 +147,10 @@ const productSchema = new Schema<IProduct>(
       type: Schema.Types.ObjectId,
       ref: 'User'
     },
+    reservedRequest: {
+      type: Schema.Types.ObjectId,
+      ref: 'BuyRequest'
+    },
     campusPickupLocation: {
       type: String,
       required: [true, 'Campus pickup location is required'],
@@ -159,5 +164,6 @@ const productSchema = new Schema<IProduct>(
 productSchema.index({ title: 'text', description: 'text', courseCode: 'text' });
 productSchema.index({ college: 1, category: 1, status: 1, price: 1 });
 productSchema.index({ seller: 1, status: 1 });
+productSchema.index({ reservedRequest: 1 });
 
 export const Product = model<IProduct>('Product', productSchema);
