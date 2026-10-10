@@ -21,7 +21,12 @@ const runTests = async () => {
         name: 'IIT Bombay',
         campusLocation: 'Powai, Mumbai',
         allowedEmailDomains: ['iitb.ac.in', 'student.iitb.ac.in'],
-        pickupLocations: ['Central Library Steps'],
+        pickupLocations: [
+          'Central Library Steps',
+          'Student Activity Center (SAC)',
+          'Main Canteen / Nescafe Hub',
+          'Hostel Gate Foyer'
+        ],
         isActive: true
       }
     },

@@ -125,6 +125,15 @@ export const MarketplacePage: React.FC = () => {
     setMinPrice('');
     setMaxPrice('');
     setSort('newest');
+    setLoading(true);
+    productService.getProducts({ sort: 'newest' })
+      .then((res) => {
+        if (res.success && res.data?.products) {
+          setProducts(res.data.products);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   };
 
   const hasActiveFilters =

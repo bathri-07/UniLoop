@@ -27,3 +27,9 @@ pnpm-debug.log*
 .idea/
 .DS_Store
 Thumbs.db
+
+# Playwright Test Artifacts
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/

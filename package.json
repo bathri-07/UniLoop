@@ -14,9 +14,14 @@
     "check:client": "npm run check --prefix client",
     "check": "npm run check:server && npm run check:client",
     "seed": "npm run seed --prefix server",
-    "test": "npm run test --prefix server"
+    "test": "npm run test --prefix server",
+    "test:e2e": "playwright test",
+    "test:e2e:report": "playwright show-report",
+    "test:all": "npm run test && npm run test:e2e"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^26.6.5",
     "concurrently": "^9.1.2"
   }
 }
