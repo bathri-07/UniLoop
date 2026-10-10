@@ -44,7 +44,7 @@ export const VerifyEmailPage: React.FC = () => {
         </div>
 
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold text-white">
+          <h1 className="text-2xl font-bold text-white tracking-tight">
             {verifying
               ? 'Verifying Campus Email...'
               : success
@@ -60,9 +60,9 @@ export const VerifyEmailPage: React.FC = () => {
           <div className="pt-2">
             <Link
               to="/login"
-              className="w-full bg-brand-emerald text-slate-950 font-semibold py-2.5 rounded-xl hover:bg-emerald-400 transition-colors text-sm flex items-center justify-center gap-2"
+              className="w-full bg-brand-emerald text-slate-950 font-semibold py-3 rounded-xl hover:bg-emerald-400 transition-colors text-sm flex items-center justify-center gap-2 focus-ring shadow-sm"
             >
-              Proceed to Sign In
+              <span>Proceed to Sign In</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>

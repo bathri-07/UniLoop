@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
-  Plus, 
   MapPin, 
   Tag, 
   BookOpen, 
   AlertCircle, 
   Upload, 
   X, 
-  Sparkles,
   ArrowLeft,
-  Image as ImageIcon
+  ArrowRight,
+  Image as ImageIcon,
+  ShieldCheck,
+  CheckCircle2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
@@ -53,7 +54,7 @@ export const CreateListingPage: React.FC = () => {
 
   // Image Management
   const [imageUrls, setImageUrls] = useState<string[]>([
-    'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600'
+    'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80'
   ]);
   const [newImageUrl, setNewImageUrl] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -86,7 +87,7 @@ export const CreateListingPage: React.FC = () => {
   const handleAddImageUrl = () => {
     if (!newImageUrl.trim()) return;
     if (imageUrls.length >= 5) {
-      setErrorMsg('Maximum 5 images allowed per listing');
+      setErrorMsg('Maximum 5 images allowed per listing.');
       return;
     }
     setImageUrls([...imageUrls, newImageUrl.trim()]);
@@ -103,7 +104,7 @@ export const CreateListingPage: React.FC = () => {
     if (!files || files.length === 0) return;
 
     if (imageUrls.length + files.length > 5) {
-      setErrorMsg('Maximum 5 images allowed per listing');
+      setErrorMsg('Maximum 5 images allowed per listing.');
       return;
     }
 
@@ -124,7 +125,6 @@ export const CreateListingPage: React.FC = () => {
       );
     } finally {
       setUploading(false);
-      // Reset input
       e.target.value = '';
     }
   };
@@ -178,7 +178,8 @@ export const CreateListingPage: React.FC = () => {
           to="/login"
           className="inline-flex items-center gap-2 bg-brand-emerald text-slate-950 font-semibold px-5 py-2.5 rounded-xl text-sm hover:bg-emerald-400 transition-colors mt-2"
         >
-          Sign In to Post Item ↗
+          <span>Sign In to Post Item</span>
+          <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
     );
@@ -192,15 +193,16 @@ export const CreateListingPage: React.FC = () => {
           to="/marketplace"
           className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-emerald-400 transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" /> Back to Marketplace
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Marketplace</span>
         </Link>
       </div>
 
       {/* Header */}
       <div className="space-y-1.5 border-b border-border-subtle pb-5">
         <div className="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-mono bg-brand-dark/40 px-2.5 py-1 rounded-full border border-brand-emerald/30">
-          <Sparkles className="w-3.5 h-3.5" />
-          Campus Circular Economy
+          <ShieldCheck className="w-3.5 h-3.5" />
+          <span>Campus Circular Economy</span>
         </div>
         <h1 className="text-3xl font-extrabold text-white tracking-tight">
           Post an Item to Campus Exchange
@@ -219,23 +221,23 @@ export const CreateListingPage: React.FC = () => {
 
       {/* Main Form */}
       <form onSubmit={handleSubmit} className="bg-surface border border-border-subtle rounded-2xl p-6 md:p-8 space-y-6 shadow-xl">
-        {/* Listing Type Toggle */}
+        {/* 1. Listing Type Toggle */}
         <div className="space-y-1.5">
           <label className="text-xs font-semibold text-slate-300">Listing Type</label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button
               type="button"
               onClick={() => {
                 setListingType('sell');
                 if (price === 0) setPrice(350);
               }}
-              className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
+              className={`p-3.5 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
                 listingType === 'sell'
                   ? 'bg-brand-emerald text-slate-950 border-brand-emerald shadow-sm'
                   : 'bg-surface-elevated text-slate-300 border-border-subtle hover:border-border-highlight'
               }`}
             >
-              Direct Sale (In INR ₹)
+              <span>Direct Sale (In INR ₹)</span>
             </button>
             <button
               type="button"
@@ -243,22 +245,25 @@ export const CreateListingPage: React.FC = () => {
                 setListingType('free');
                 setPrice(0);
               }}
-              className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
+              className={`p-3.5 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
                 listingType === 'free'
                   ? 'bg-brand-emerald text-slate-950 border-brand-emerald shadow-sm'
                   : 'bg-surface-elevated text-slate-300 border-border-subtle hover:border-border-highlight'
               }`}
             >
               <Tag className="w-3.5 h-3.5" />
-              Free Pass-Down Giveaway (₹0)
+              <span>Free Pass-Down Giveaway (₹0)</span>
             </button>
           </div>
         </div>
 
-        {/* Title */}
+        {/* 2. Title */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-300">Product Title</label>
+          <label htmlFor="product-title" className="text-xs font-semibold text-slate-300">
+            Product Title
+          </label>
           <input
+            id="product-title"
             type="text"
             required
             minLength={3}
@@ -270,11 +275,14 @@ export const CreateListingPage: React.FC = () => {
           />
         </div>
 
-        {/* Category & Condition Grid */}
+        {/* 3. Category & Condition Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Category (8 Standard)</label>
+            <label htmlFor="product-category" className="text-xs font-semibold text-slate-300">
+              Category (8 Standard)
+            </label>
             <select
+              id="product-category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               className="w-full bg-surface-input border border-border-subtle focus:border-brand-emerald rounded-xl px-3.5 py-2.5 text-sm text-white outline-none transition-colors"
@@ -288,8 +296,11 @@ export const CreateListingPage: React.FC = () => {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Physical Condition</label>
+            <label htmlFor="product-condition" className="text-xs font-semibold text-slate-300">
+              Physical Condition
+            </label>
             <select
+              id="product-condition"
               value={condition}
               onChange={(e) => setCondition(e.target.value)}
               className="w-full bg-surface-input border border-border-subtle focus:border-brand-emerald rounded-xl px-3.5 py-2.5 text-sm text-white outline-none transition-colors"
@@ -303,13 +314,14 @@ export const CreateListingPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Pricing Grid */}
+        {/* 4. Pricing Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">
+            <label htmlFor="selling-price" className="text-xs font-semibold text-slate-300">
               Selling Price (INR ₹)
             </label>
             <input
+              id="selling-price"
               type="number"
               min={0}
               required
@@ -324,10 +336,11 @@ export const CreateListingPage: React.FC = () => {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">
+            <label htmlFor="original-price" className="text-xs font-semibold text-slate-300">
               Original MRP / Store Price (Optional)
             </label>
             <input
+              id="original-price"
               type="number"
               min={0}
               placeholder="e.g. 1395"
@@ -343,14 +356,15 @@ export const CreateListingPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Academic Details (Course Code & ISBN) */}
+        {/* 5. Academic Details (Course Code & ISBN) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+            <label htmlFor="course-code" className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
               <BookOpen className="w-3.5 h-3.5 text-brand-emerald" />
-              Course Code (Optional)
+              <span>Course Code (Optional)</span>
             </label>
             <input
+              id="course-code"
               type="text"
               maxLength={12}
               placeholder="e.g. CS201, EE101"
@@ -361,10 +375,11 @@ export const CreateListingPage: React.FC = () => {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">
+            <label htmlFor="textbook-isbn" className="text-xs font-semibold text-slate-300">
               Textbook ISBN (Optional)
             </label>
             <input
+              id="textbook-isbn"
               type="text"
               placeholder="e.g. 9780262033848"
               value={isbn}
@@ -374,13 +389,14 @@ export const CreateListingPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Designated Campus Safe Pickup Spot */}
+        {/* 6. Designated Campus Safe Pickup Spot */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+          <label htmlFor="pickup-location" className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
             <MapPin className="w-3.5 h-3.5 text-brand-emerald" />
-            Designated Campus Safe Pickup Location
+            <span>Designated Campus Safe Pickup Location</span>
           </label>
           <select
+            id="pickup-location"
             value={campusPickupLocation}
             onChange={(e) => setCampusPickupLocation(e.target.value)}
             className="w-full bg-surface-input border border-border-subtle focus:border-brand-emerald rounded-xl px-3.5 py-2.5 text-sm text-white outline-none transition-colors"
@@ -396,10 +412,13 @@ export const CreateListingPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Description */}
+        {/* 7. Detailed Description */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-300">Detailed Description</label>
+          <label htmlFor="product-description" className="text-xs font-semibold text-slate-300">
+            Detailed Description
+          </label>
           <textarea
+            id="product-description"
             required
             rows={4}
             maxLength={1500}
@@ -410,17 +429,17 @@ export const CreateListingPage: React.FC = () => {
           />
         </div>
 
-        {/* Image Management */}
+        {/* 8. Image Management */}
         <div className="space-y-3 border-t border-border-subtle pt-4">
           <div className="flex items-center justify-between">
             <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
               <ImageIcon className="w-4 h-4 text-brand-emerald" />
-              Listing Images (1 - 5 Images)
+              <span>Listing Images (1 - 5 Photos)</span>
             </label>
-            <span className="text-[11px] text-muted font-mono">{imageUrls.length}/5 images added</span>
+            <span className="text-[11px] text-muted font-mono">{imageUrls.length}/5 photos added</span>
           </div>
 
-          {/* Image Previews */}
+          {/* Previews Grid */}
           {imageUrls.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
               {imageUrls.map((url, idx) => (
@@ -430,6 +449,7 @@ export const CreateListingPage: React.FC = () => {
                     type="button"
                     onClick={() => handleRemoveImage(idx)}
                     className="absolute top-1 right-1 p-1 rounded-full bg-slate-950/80 text-red-400 hover:text-red-300 transition-colors"
+                    aria-label={`Remove photo ${idx + 1}`}
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -438,12 +458,12 @@ export const CreateListingPage: React.FC = () => {
             </div>
           )}
 
-          {/* Add Image URL or Upload File */}
+          {/* Add Image URL or Upload Local Files */}
           <div className="space-y-2">
             <div className="flex gap-2">
               <input
                 type="url"
-                placeholder="Paste direct HTTPS image URL..."
+                placeholder="Paste direct HTTPS photo URL..."
                 value={newImageUrl}
                 onChange={(e) => setNewImageUrl(e.target.value)}
                 className="flex-1 bg-surface-input border border-border-subtle focus:border-brand-emerald rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-600 outline-none"
@@ -457,11 +477,10 @@ export const CreateListingPage: React.FC = () => {
               </button>
             </div>
 
-            {/* File Upload Option */}
             <div className="relative">
               <label className="cursor-pointer bg-surface-input hover:bg-surface-elevated border border-dashed border-border-highlight rounded-xl p-3 flex items-center justify-center gap-2 text-xs text-slate-400 hover:text-white transition-colors">
                 <Upload className="w-4 h-4 text-brand-emerald" />
-                <span>{uploading ? 'Uploading to Cloudinary...' : 'Upload local photos (JPG/PNG/WebP, max 5MB)'}</span>
+                <span>{uploading ? 'Uploading to storage...' : 'Upload local photos (JPG/PNG/WebP, max 5MB each)'}</span>
                 <input
                   type="file"
                   multiple
@@ -475,18 +494,21 @@ export const CreateListingPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Submit Button */}
+        {/* 9. Publish Button */}
         <button
           type="submit"
           disabled={submitting || uploading}
-          className="w-full bg-brand-emerald text-slate-950 font-semibold py-3 rounded-xl hover:bg-emerald-400 transition-colors text-sm flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 mt-4"
+          className="w-full bg-brand-emerald text-slate-950 font-semibold py-3.5 rounded-xl hover:bg-emerald-400 transition-colors text-sm flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 mt-4 focus-ring"
         >
           {submitting ? (
-            'Publishing Listing...'
+            <span className="flex items-center gap-2">
+              <span className="w-4 h-4 rounded-full border-2 border-slate-950 border-t-transparent animate-spin" />
+              <span>Publishing Listing...</span>
+            </span>
           ) : (
             <>
-              <Plus className="w-4 h-4" />
-              Publish Listing to Campus
+              <CheckCircle2 className="w-4 h-4" />
+              <span>Publish Listing to Campus</span>
             </>
           )}
         </button>

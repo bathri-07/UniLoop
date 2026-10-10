@@ -16,9 +16,14 @@ import {
   ShieldCheck, 
   Server, 
   Layers, 
-  Sparkles,
-  LogIn,
-  UserPlus
+  LogIn, 
+  UserPlus,
+  ArrowRight,
+  Plus,
+  Leaf,
+  Lock,
+  Search,
+  Key
 } from 'lucide-react';
 
 interface HealthData {
@@ -64,67 +69,145 @@ const HomeDashboard: React.FC = () => {
   }, []);
 
   return (
-    <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-12 space-y-8">
-      {/* Hero Section */}
-      <div className="text-center space-y-4 max-w-2xl mx-auto pt-2">
+    <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-10 space-y-16">
+      {/* 1. Hero Section - Inspired by design/Html -> Body.png */}
+      <section className="text-center space-y-6 max-w-3xl mx-auto pt-4" aria-labelledby="hero-heading">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-dark/40 border border-brand-emerald/30 text-emerald-400 text-xs font-medium">
-          <Sparkles className="w-3.5 h-3.5" />
-          Smart, Secure, Second-Hand Campus Exchange
+          <Leaf className="w-3.5 h-3.5" />
+          <span>Verified Campus Circular Exchange • Institutional Auth Only</span>
         </div>
-        <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
-          UniLoop Campus Platform
+
+        <h1 id="hero-heading" className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-tight">
+          Your Campus. Your Community.{' '}
+          <span className="bg-gradient-to-r from-emerald-400 to-teal-200 bg-clip-text text-transparent block sm:inline">
+            Your Next Find.
+          </span>
         </h1>
-        <p className="text-muted text-base md:text-lg">
-          Campus-exclusive circular economy verified by institutional student email domains.
+
+        <p className="text-muted text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+          Buy, sell, and pass down textbooks, calculators, lab gear, and hostel essentials with fellow students. Zero stranger danger, zero shipping wait times.
         </p>
 
-        {/* User Status / Quick Action Buttons */}
+        {/* Action CTAs */}
         <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
           <Link
             to="/marketplace"
-            className="bg-brand-emerald text-slate-950 font-semibold px-5 py-2.5 rounded-xl text-sm hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-sm"
+            className="bg-brand-emerald text-slate-950 font-bold px-6 py-3.5 rounded-xl text-sm hover:bg-emerald-400 transition-all flex items-center gap-2 shadow-sm focus-ring"
           >
-            <Sparkles className="w-4 h-4" />
-            Explore Campus Marketplace ↗
+            <span>Explore Campus Marketplace</span>
+            <ArrowRight className="w-4 h-4" />
           </Link>
+
           {user ? (
             <Link
               to="/create-listing"
-              className="bg-surface-elevated text-slate-200 border border-border-subtle hover:border-border-highlight px-5 py-2.5 rounded-xl text-sm transition-colors flex items-center gap-2"
+              className="bg-surface-elevated text-slate-200 border border-border-subtle hover:border-border-highlight px-5 py-3.5 rounded-xl text-sm font-semibold transition-colors flex items-center gap-2 focus-ring"
             >
-              Post an Item (+ Earn)
+              <Plus className="w-4 h-4 text-brand-emerald" />
+              <span>Post an Item (+ Earn)</span>
             </Link>
           ) : (
-            <>
+            <div className="flex items-center gap-2">
               <Link
                 to="/login"
-                className="bg-surface-elevated text-slate-200 border border-border-subtle hover:border-border-highlight px-5 py-2.5 rounded-xl text-sm transition-colors flex items-center gap-2"
+                className="bg-surface-elevated text-slate-200 border border-border-subtle hover:border-border-highlight px-4 py-3.5 rounded-xl text-sm font-semibold transition-colors flex items-center gap-2 focus-ring"
               >
                 <LogIn className="w-4 h-4" />
-                Sign In (Demo Logins)
+                <span>Demo Logins</span>
               </Link>
               <Link
                 to="/register"
-                className="bg-surface-elevated text-slate-200 border border-border-subtle hover:border-border-highlight px-5 py-2.5 rounded-xl text-sm transition-colors flex items-center gap-2"
+                className="bg-surface-elevated text-slate-200 border border-border-subtle hover:border-border-highlight px-4 py-3.5 rounded-xl text-sm font-semibold transition-colors flex items-center gap-2 focus-ring"
               >
                 <UserPlus className="w-4 h-4" />
-                Register
+                <span>Register</span>
               </Link>
-            </>
+            </div>
           )}
         </div>
-      </div>
 
-      {/* Backend & Database Live Status Card */}
-      <div className="bg-surface border border-border-subtle rounded-2xl p-6 md:p-8 space-y-6 shadow-xl">
+        <div className="flex items-center justify-center gap-2 text-xs text-slate-400 pt-2 font-mono">
+          <ShieldCheck className="w-4 h-4 text-brand-emerald" />
+          <span>Restricted to authorized collegiate domains (@iitb.ac.in)</span>
+        </div>
+      </section>
+
+      {/* 2. 4-Step Handover Trust Architecture - docs/design-adaptation.md § 5 */}
+      <section className="space-y-6" aria-labelledby="trust-heading">
+        <div className="text-center space-y-2 max-w-xl mx-auto">
+          <div className="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-mono uppercase tracking-wider bg-surface px-3 py-1 rounded-full border border-border-subtle">
+            <ShieldCheck className="w-3.5 h-3.5 text-brand-emerald" />
+            <span>Zero Stranger Danger</span>
+          </div>
+          <h2 id="trust-heading" className="text-2xl md:text-3xl font-bold text-white tracking-tight">
+            Engineered Exclusively for Campus Life
+          </h2>
+          <p className="text-xs md:text-sm text-muted">
+            No shipping fees, no waiting weeks for couriers. In-person handshakes between verified university peers at designated landmark safe spots.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Step 1 */}
+          <div className="bg-surface border border-border-subtle rounded-2xl p-5 space-y-3 relative shadow-lg">
+            <div className="flex items-center justify-between text-xs text-muted">
+              <span className="font-mono text-emerald-400 font-bold">STEP 01</span>
+              <ShieldCheck className="w-4 h-4 text-brand-emerald" />
+            </div>
+            <h3 className="font-bold text-white text-sm">Verify with Campus Email</h3>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Login requires a valid university institutional domain (.ac.in). Outside domains are rejected with zero bot activity.
+            </p>
+          </div>
+
+          {/* Step 2 */}
+          <div className="bg-surface border border-border-subtle rounded-2xl p-5 space-y-3 relative shadow-lg">
+            <div className="flex items-center justify-between text-xs text-muted">
+              <span className="font-mono text-emerald-400 font-bold">STEP 02</span>
+              <Search className="w-4 h-4 text-brand-emerald" />
+            </div>
+            <h3 className="font-bold text-white text-sm">Discover or Request Nearby</h3>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Search by exact Course Code (e.g. CS201), textbook ISBN, or hostel pickup point. Filter by direct sale or free senior giveaway.
+            </p>
+          </div>
+
+          {/* Step 3 */}
+          <div className="bg-surface border border-border-subtle rounded-2xl p-5 space-y-3 relative shadow-lg">
+            <div className="flex items-center justify-between text-xs text-muted">
+              <span className="font-mono text-emerald-400 font-bold">STEP 03</span>
+              <Lock className="w-4 h-4 text-brand-emerald" />
+            </div>
+            <h3 className="font-bold text-white text-sm">48h Safe Landmark Hold</h3>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Accepting a request reserves the item atomically for 48 hours. Prevents ghosting and double bookings during semester rush.
+            </p>
+          </div>
+
+          {/* Step 4 */}
+          <div className="bg-surface border border-border-subtle rounded-2xl p-5 space-y-3 relative shadow-lg">
+            <div className="flex items-center justify-between text-xs text-muted">
+              <span className="font-mono text-emerald-400 font-bold">STEP 04</span>
+              <Key className="w-4 h-4 text-brand-emerald" />
+            </div>
+            <h3 className="font-bold text-white text-sm">Inspect & Handover PIN</h3>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Inspect the item at the Central Library or SAC. Buyer presents a secure 4-digit PIN generated at accept time to finalize exchange.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. System Infrastructure Diagnostics Dashboard */}
+      <section className="bg-surface border border-border-subtle rounded-2xl p-6 md:p-8 space-y-6 shadow-xl" aria-labelledby="status-heading">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border-subtle pb-5">
           <div>
-            <h2 className="text-xl font-bold text-white flex items-center gap-2.5">
+            <h2 id="status-heading" className="text-lg md:text-xl font-bold text-white flex items-center gap-2.5">
               <Activity className="w-5 h-5 text-brand-emerald" />
-              Infrastructure & Auth Health Probe
+              <span>Infrastructure & API Diagnostics</span>
             </h2>
             <p className="text-xs text-muted mt-1 font-mono">
-              Live Target: GET /api/v1/health
+              Live Probe Target: GET /api/v1/health
             </p>
           </div>
           <div>
@@ -135,7 +218,7 @@ const HomeDashboard: React.FC = () => {
             ) : health?.database.isConnected ? (
               <span className="px-3 py-1 rounded-full text-xs font-semibold bg-brand-emerald/10 text-emerald-400 border border-brand-emerald/30 flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                Systems Operational
+                <span>Systems Operational</span>
               </span>
             ) : (
               <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/10 text-red-400 border border-red-500/30">
@@ -145,7 +228,7 @@ const HomeDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Diagnostic Metrics Grid */}
+        {/* Metrics Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-surface-elevated/70 border border-border-subtle rounded-xl p-4 space-y-2">
             <div className="flex items-center justify-between text-muted text-xs">
@@ -195,37 +278,33 @@ const HomeDashboard: React.FC = () => {
               {loading ? '...' : health?.demoMode ? 'DEMO_MODE' : 'Production'}
             </div>
             <div className="text-[11px] text-muted">
-              1-Click Logins enabled
+              1-Click Logins active
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Phase 2 Feature Verification Grid */}
-      <div className="bg-surface border border-border-subtle rounded-2xl p-6 space-y-4">
-        <h3 className="font-bold text-white text-base flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-brand-emerald" />
-          Phase 2 Authentication Capabilities Active
-        </h3>
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-slate-300">
-          <li className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-emerald" />
-            Campus Domain Validation (IIT Bombay @iitb.ac.in enforced; @gmail.com blocked)
-          </li>
-          <li className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-emerald" />
-            1-Click Demo Logins for Priya S. (Seller) & Rahul M. (Buyer)
-          </li>
-          <li className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-emerald" />
-            One-time token email verification with replay protection
-          </li>
-          <li className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-emerald" />
-            Real-time Account Suspension Gate (blocked at login and protected routes)
-          </li>
-        </ul>
-      </div>
+        {/* Feature Check List */}
+        <div className="pt-2 border-t border-border-subtle/80">
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs text-slate-300">
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="w-3.5 h-3.5 text-brand-emerald shrink-0" />
+              <span>Campus Domain Authentication (IIT Bombay @iitb.ac.in enforced; @gmail.com rejected)</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="w-3.5 h-3.5 text-brand-emerald shrink-0" />
+              <span>Product Marketplace with 8-Category Taxonomy & INR ₹ pricing</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="w-3.5 h-3.5 text-brand-emerald shrink-0" />
+              <span>Contact privacy protection (public endpoints never expose phone or email)</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="w-3.5 h-3.5 text-brand-emerald shrink-0" />
+              <span>Real-time suspension and verification gatekeepers</span>
+            </li>
+          </ul>
+        </div>
+      </section>
     </main>
   );
 };
@@ -245,8 +324,17 @@ export const App: React.FC = () => {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/verify-email" element={<VerifyEmailPage />} />
           </Routes>
-          <footer className="border-t border-border-subtle py-6 text-center text-xs text-muted">
-            UniLoop — Smart, Secure, Second-Hand Campus Exchange &copy; {new Date().getFullYear()}
+          <footer className="border-t border-border-subtle py-8 text-center text-xs text-muted space-y-2 mt-auto">
+            <div className="flex items-center justify-center gap-4 text-slate-400">
+              <Link to="/marketplace" className="hover:text-emerald-400 transition-colors">Marketplace</Link>
+              <span>•</span>
+              <Link to="/create-listing" className="hover:text-emerald-400 transition-colors">Post an Item</Link>
+              <span>•</span>
+              <Link to="/" className="hover:text-emerald-400 transition-colors">System Diagnostics</Link>
+            </div>
+            <p className="text-slate-500">
+              UniLoop — Campus Second-Hand Exchange &bull; Indian Campus Environment (INR &bull; +91) &copy; {new Date().getFullYear()}
+            </p>
           </footer>
         </div>
       </AuthProvider>

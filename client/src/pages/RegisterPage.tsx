@@ -11,7 +11,8 @@ import {
   User as UserIcon,
   Phone,
   Lock,
-  Sparkles
+  ShieldCheck,
+  ArrowRight
 } from 'lucide-react';
 
 interface CollegeOption {
@@ -97,7 +98,6 @@ export const RegisterPage: React.FC = () => {
           message: result.message
         });
       } else {
-        // Normal mode (without demo token display)
         alert(result.message);
         navigate('/login');
       }
@@ -126,7 +126,7 @@ export const RegisterPage: React.FC = () => {
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-dark/40 border border-brand-emerald/30 text-emerald-400 text-xs font-medium">
             <Building2 className="w-3.5 h-3.5" />
-            Institutional Student Onboarding
+            <span>Institutional Student Onboarding</span>
           </div>
           <h1 className="text-3xl font-extrabold text-white tracking-tight">
             Register Student Account
@@ -140,8 +140,8 @@ export const RegisterPage: React.FC = () => {
         {demoVerification && (
           <div className="bg-brand-dark/50 border border-brand-emerald rounded-2xl p-6 space-y-4 shadow-2xl animate-fade-in">
             <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
-              <Sparkles className="w-4 h-4" />
-              Demo Mode Email Verification Banner
+              <ShieldCheck className="w-4 h-4" />
+              <span>Campus Email Verification Issued</span>
             </div>
             <p className="text-xs text-slate-200 leading-relaxed">
               {demoVerification.message} In accordance with <code className="text-emerald-300 font-mono">DEMO_MODE=true</code>, your account verification token is surfaced on screen for instant evaluation.
@@ -151,16 +151,17 @@ export const RegisterPage: React.FC = () => {
               <div className="bg-surface rounded-xl p-4 border border-brand-emerald/40 space-y-3">
                 <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
                   <CheckCircle2 className="w-4 h-4" />
-                  Account Successfully Verified!
+                  <span>Account Successfully Verified!</span>
                 </div>
                 <p className="text-xs text-slate-300">
-                  Your campus identity has been verified. You may now log in to post and request items.
+                  Your campus identity has been verified. You may now sign in to post and request items.
                 </p>
                 <Link
                   to="/login"
-                  className="inline-flex items-center justify-center w-full bg-brand-emerald text-slate-950 font-semibold py-2.5 rounded-xl hover:bg-emerald-400 text-sm transition-colors"
+                  className="inline-flex items-center justify-center gap-2 w-full bg-brand-emerald text-slate-950 font-semibold py-2.5 rounded-xl hover:bg-emerald-400 text-sm transition-colors focus-ring"
                 >
-                  Proceed to Login ↗
+                  <span>Proceed to Sign In</span>
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
             ) : (
@@ -169,10 +170,11 @@ export const RegisterPage: React.FC = () => {
                   type="button"
                   disabled={verifyingDemo}
                   onClick={handleInstantDemoVerify}
-                  className="w-full bg-brand-emerald text-slate-950 font-semibold py-3 rounded-xl hover:bg-emerald-400 transition-colors text-sm flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
+                  className="w-full bg-brand-emerald text-slate-950 font-semibold py-3 rounded-xl hover:bg-emerald-400 transition-colors text-sm flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 focus-ring"
                 >
                   <CheckCircle2 className="w-4 h-4" />
-                  {verifyingDemo ? 'Verifying Account...' : 'Click Here to Instantly Verify Account ↗'}
+                  <span>{verifyingDemo ? 'Verifying Account...' : 'Click Here to Instantly Verify Account'}</span>
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             )}
@@ -192,11 +194,12 @@ export const RegisterPage: React.FC = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* College Selector */}
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300 flex items-center justify-between">
+                <label htmlFor="reg-college" className="text-xs font-medium text-slate-300 flex items-center justify-between">
                   <span>Enrolled Campus</span>
                   <span className="text-[11px] text-emerald-400 font-mono">Domain Enforced</span>
                 </label>
                 <select
+                  id="reg-college"
                   disabled={collegesLoading}
                   value={selectedCollegeId}
                   onChange={(e) => setSelectedCollegeId(e.target.value)}
@@ -221,12 +224,13 @@ export const RegisterPage: React.FC = () => {
 
               {/* Full Name */}
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">
+                <label htmlFor="reg-name" className="text-xs font-medium text-slate-300">
                   Full Student Name
                 </label>
                 <div className="relative">
                   <UserIcon className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
+                    id="reg-name"
                     type="text"
                     required
                     placeholder="e.g. Rahul Mehra"
@@ -239,12 +243,13 @@ export const RegisterPage: React.FC = () => {
 
               {/* Campus Email */}
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">
+                <label htmlFor="reg-email" className="text-xs font-medium text-slate-300">
                   Campus Institutional Email
                 </label>
                 <div className="relative">
                   <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
+                    id="reg-email"
                     type="email"
                     required
                     placeholder="student@iitb.ac.in"
@@ -260,12 +265,13 @@ export const RegisterPage: React.FC = () => {
 
               {/* Indian Phone Number */}
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">
+                <label htmlFor="reg-phone" className="text-xs font-medium text-slate-300">
                   Mobile / WhatsApp (+91)
                 </label>
                 <div className="relative">
                   <Phone className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
+                    id="reg-phone"
                     type="tel"
                     required
                     placeholder="+919819876543"
@@ -278,12 +284,13 @@ export const RegisterPage: React.FC = () => {
 
               {/* Password */}
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">
+                <label htmlFor="reg-password" className="text-xs font-medium text-slate-300">
                   Password (min. 8 characters)
                 </label>
                 <div className="relative">
                   <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
+                    id="reg-password"
                     type="password"
                     required
                     minLength={8}
@@ -298,14 +305,17 @@ export const RegisterPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-brand-emerald text-slate-950 font-semibold py-2.5 rounded-xl hover:bg-emerald-400 transition-colors text-sm flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 mt-2"
+                className="w-full bg-brand-emerald text-slate-950 font-semibold py-3 rounded-xl hover:bg-emerald-400 transition-colors text-sm flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 mt-2 focus-ring"
               >
                 {submitting ? (
-                  'Verifying Domain & Registering...'
+                  <span className="flex items-center gap-2">
+                    <span className="w-4 h-4 rounded-full border-2 border-slate-950 border-t-transparent animate-spin" />
+                    <span>Verifying Domain & Registering...</span>
+                  </span>
                 ) : (
                   <>
                     <UserPlus className="w-4 h-4" />
-                    Register Account
+                    <span>Register Account</span>
                   </>
                 )}
               </button>

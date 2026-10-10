@@ -3,12 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
   LogIn, 
-  Sparkles, 
   AlertCircle, 
   ShieldCheck, 
   UserCheck, 
   Lock,
-  Mail
+  Mail,
+  ArrowRight
 } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
@@ -29,7 +29,7 @@ export const LoginPage: React.FC = () => {
     setLoading(false);
 
     if (success) {
-      navigate('/');
+      navigate('/marketplace');
     }
   };
 
@@ -40,7 +40,7 @@ export const LoginPage: React.FC = () => {
     setDemoLoading(null);
 
     if (success) {
-      navigate('/');
+      navigate('/marketplace');
     }
   };
 
@@ -51,7 +51,7 @@ export const LoginPage: React.FC = () => {
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-dark/40 border border-brand-emerald/30 text-emerald-400 text-xs font-medium">
             <ShieldCheck className="w-3.5 h-3.5" />
-            Campus Domain Authenticated
+            <span>Campus Domain Authenticated</span>
           </div>
           <h1 className="text-3xl font-extrabold text-white tracking-tight">
             Sign in to UniLoop
@@ -61,19 +61,19 @@ export const LoginPage: React.FC = () => {
           </p>
         </div>
 
-        {/* 1-Click Demo Logins Banner - AGENTS.md § 3.6 & docs/testing.md § 3.1 */}
+        {/* 1-Click Demo Logins Banner - AGENTS.md § 3.6 */}
         <div className="bg-surface-elevated/90 border border-brand-emerald/30 rounded-2xl p-5 space-y-3 shadow-lg">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5" />
-              1-Click Demo Login (Viva Mode)
+              <UserCheck className="w-3.5 h-3.5" />
+              <span>1-Click Demo Login</span>
             </span>
             <span className="text-[10px] bg-brand-dark text-emerald-300 px-2 py-0.5 rounded font-mono">
               DEMO_MODE=true
             </span>
           </div>
           <p className="text-xs text-slate-300 leading-relaxed">
-            Instantly log in using seeded demo student profiles without typing passwords:
+            Instantly sign in using pre-seeded IIT Bombay student profiles for testing:
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
@@ -81,19 +81,20 @@ export const LoginPage: React.FC = () => {
               type="button"
               disabled={demoLoading !== null || loading}
               onClick={() => handleDemoClick('priya')}
-              className="bg-surface border border-border-highlight hover:border-brand-emerald p-3 rounded-xl text-left transition-all hover:-translate-y-0.5 flex flex-col justify-between group disabled:opacity-50"
+              className="bg-surface border border-border-highlight hover:border-brand-emerald p-3 rounded-xl text-left transition-all hover:-translate-y-0.5 flex flex-col justify-between group disabled:opacity-50 focus-ring"
             >
               <div>
                 <span className="text-xs font-semibold text-white group-hover:text-emerald-400 transition-colors flex items-center gap-1">
                   <UserCheck className="w-3 h-3 text-brand-emerald" />
-                  Priya S.
+                  <span>Priya S.</span>
                 </span>
                 <span className="text-[11px] text-muted block truncate">
                   priya.senior@iitb.ac.in
                 </span>
               </div>
-              <span className="text-[10px] text-emerald-400 font-mono mt-2 flex items-center gap-1">
-                {demoLoading === 'priya' ? 'Signing in...' : 'Senior Seller ↗'}
+              <span className="text-[10px] text-emerald-400 font-mono mt-2 flex items-center justify-between">
+                <span>{demoLoading === 'priya' ? 'Signing in...' : 'Senior Seller'}</span>
+                <ArrowRight className="w-3 h-3" />
               </span>
             </button>
 
@@ -101,19 +102,20 @@ export const LoginPage: React.FC = () => {
               type="button"
               disabled={demoLoading !== null || loading}
               onClick={() => handleDemoClick('rahul')}
-              className="bg-surface border border-border-highlight hover:border-brand-emerald p-3 rounded-xl text-left transition-all hover:-translate-y-0.5 flex flex-col justify-between group disabled:opacity-50"
+              className="bg-surface border border-border-highlight hover:border-brand-emerald p-3 rounded-xl text-left transition-all hover:-translate-y-0.5 flex flex-col justify-between group disabled:opacity-50 focus-ring"
             >
               <div>
                 <span className="text-xs font-semibold text-white group-hover:text-emerald-400 transition-colors flex items-center gap-1">
                   <UserCheck className="w-3 h-3 text-brand-emerald" />
-                  Rahul M.
+                  <span>Rahul M.</span>
                 </span>
                 <span className="text-[11px] text-muted block truncate">
                   rahul.mech26@iitb.ac.in
                 </span>
               </div>
-              <span className="text-[10px] text-emerald-400 font-mono mt-2 flex items-center gap-1">
-                {demoLoading === 'rahul' ? 'Signing in...' : 'Fresher Buyer ↗'}
+              <span className="text-[10px] text-emerald-400 font-mono mt-2 flex items-center justify-between">
+                <span>{demoLoading === 'rahul' ? 'Signing in...' : 'Fresher Buyer'}</span>
+                <ArrowRight className="w-3 h-3" />
               </span>
             </button>
           </div>
@@ -130,12 +132,13 @@ export const LoginPage: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-slate-300">
+              <label htmlFor="login-email" className="text-xs font-medium text-slate-300">
                 Campus Email Address
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
+                  id="login-email"
                   type="email"
                   required
                   placeholder="name@iitb.ac.in"
@@ -147,14 +150,13 @@ export const LoginPage: React.FC = () => {
             </div>
 
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-medium text-slate-300">
-                  Password
-                </label>
-              </div>
+              <label htmlFor="login-password" className="text-xs font-medium text-slate-300">
+                Password
+              </label>
               <div className="relative">
                 <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
+                  id="login-password"
                   type="password"
                   required
                   placeholder="Enter password"
@@ -167,24 +169,28 @@ export const LoginPage: React.FC = () => {
 
             <button
               type="submit"
-              disabled={loading || demoLoading !== null}
-              className="w-full bg-brand-emerald text-slate-950 font-semibold py-2.5 rounded-xl hover:bg-emerald-400 transition-colors text-sm flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 mt-2"
+              disabled={loading}
+              className="w-full bg-brand-emerald text-slate-950 font-semibold py-3 rounded-xl hover:bg-emerald-400 transition-colors text-sm flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 mt-2 focus-ring"
             >
               {loading ? (
-                'Authenticating...'
+                <span className="flex items-center gap-2">
+                  <span className="w-4 h-4 rounded-full border-2 border-slate-950 border-t-transparent animate-spin" />
+                  <span>Authenticating...</span>
+                </span>
               ) : (
                 <>
                   <LogIn className="w-4 h-4" />
-                  Sign In to Campus Exchange
+                  <span>Sign In</span>
                 </>
               )}
             </button>
           </form>
 
-          <div className="text-center pt-2 border-t border-border-subtle text-xs text-muted">
-            New to UniLoop?{' '}
-            <Link to="/register" className="text-emerald-400 hover:underline font-medium">
-              Register with your campus email
+          {/* Bottom link to Register */}
+          <div className="text-center pt-2 border-t border-border-subtle/80 text-xs text-muted">
+            <span>New student at IIT Bombay? </span>
+            <Link to="/register" className="text-emerald-400 font-semibold hover:underline">
+              Create an account
             </Link>
           </div>
         </div>
