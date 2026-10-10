@@ -1,0 +1,22 @@
+{
+  "name": "uniloop-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "UniLoop — Smart, Secure, Second-Hand Campus Exchange",
+  "scripts": {
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,green\" \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "build:server": "npm run build --prefix server",
+    "build:client": "npm run build --prefix client",
+    "build": "npm run build:server && npm run build:client",
+    "check:server": "npm run check --prefix server",
+    "check:client": "npm run check --prefix client",
+    "check": "npm run check:server && npm run check:client",
+    "seed": "npm run seed --prefix server",
+    "test": "npm run test --prefix server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
